@@ -18,6 +18,7 @@ const fitState = {
   savedMsg: '',
   showStoreDrawer: false,
   showPriceDrawer: false,
+  showSizeDrawer: false,
   storeFilter: {
     mode: 'include', // 'include' | 'exclude'
     selected: new Set(),
@@ -29,6 +30,10 @@ const fitState = {
     totalMax: null,
     itemMin: null,
     itemMax: null,
+  },
+  sizeFilter: {
+    initialized: false,
+    selected: new Set(),
   },
   slots: {
     hat: { enabled: true, locked: false, item: null, spinning: false },
@@ -210,6 +215,102 @@ function getPriceBtnClass() {
   return '';
 }
 
+// ---------------------------------------------------------------- Size Filter Helpers
+const SIZE_LETTER_SYNONYMS = {
+  '2XS': ['2XS', 'XXS', 'EXTRA EXTRA SMALL'],
+  'XS': ['XS', 'X-SMALL', 'EXTRA SMALL'],
+  'S': ['S', 'SMALL'],
+  'M': ['M', 'MEDIUM', 'MED'],
+  'L': ['L', 'LARGE'],
+  'XL': ['XL', 'X-LARGE', 'EXTRA LARGE'],
+  '2XL': ['2XL', 'XXL', '2X-LARGE', '2X'],
+  '3XL': ['3XL', 'XXXL', '3X-LARGE', '3X'],
+  '4XL': ['4XL', 'XXXXL', '4X-LARGE', '4X'],
+  '5XL': ['5XL', 'XXXXXL', '5X-LARGE', '5X'],
+};
+
+function matchesSingleSize(stockStr, targetStr) {
+  const stock = String(stockStr || '').toUpperCase().trim();
+  const target = String(targetStr || '').toUpperCase().trim();
+  if (!stock || !target) return false;
+  if (stock === target) return true;
+
+  if (SIZE_LETTER_SYNONYMS[target]) {
+    for (const alt of SIZE_LETTER_SYNONYMS[target]) {
+      if (stock === alt) return true;
+      if (new RegExp('(^|[^A-Z])' + alt + '([^A-Z]|$)').test(stock)) return true;
+    }
+  }
+
+  // Numbers (shoe & waist, e.g. 14, 10.5, 32)
+  if (/^\d+(\.5)?$/.test(target)) {
+    const escTarget = target.replace('.', '\\.');
+    const regex = new RegExp('(^|[^0-9.])' + escTarget + '([^0-9.]|$)');
+    if (regex.test(stock)) return true;
+  }
+
+  return false;
+}
+
+function initSizeFilterFromSettings() {
+  const sf = fitState.sizeFilter;
+  if (sf.initialized) return;
+  sf.initialized = true;
+  if (state.data && state.data.settings && Array.isArray(state.data.settings.sizes) && state.data.settings.sizes.length > 0) {
+    for (const s of state.data.settings.sizes) sf.selected.add(s);
+  } else if (state.sizes && state.sizes.size > 0) {
+    for (const s of state.sizes) sf.selected.add(s);
+  }
+}
+
+function getProductMatchedSize(p, category) {
+  initSizeFilterFromSettings();
+  const sf = fitState.sizeFilter;
+  if (!sf || !sf.selected || sf.selected.size === 0) return 'ALL';
+
+  const isOneSizeCat = category === 'Hats' || category === 'Accessories';
+  const sizes = Array.isArray(p.sizes) ? p.sizes : [];
+
+  if (sizes.length === 0) {
+    return isOneSizeCat ? 'O/S' : null;
+  }
+
+  const isAllOneSize = sizes.every((s) => {
+    const n = String(typeof s === 'string' ? s : s.name || '').toUpperCase().trim();
+    return n === 'ONE SIZE' || n === 'O/S' || n === 'OS' || n === 'OSFA' || n === 'ALL';
+  });
+  if (isAllOneSize) {
+    const inStock = sizes.some((s) => typeof s === 'string' || s.inStock !== false);
+    return inStock ? 'O/S' : null;
+  }
+
+  const inStockSizes = sizes.filter((s) => typeof s === 'string' || s.inStock !== false);
+  for (const sel of sf.selected) {
+    for (const s of inStockSizes) {
+      const name = typeof s === 'string' ? s : s.name;
+      if (matchesSingleSize(name, sel)) return sel;
+    }
+  }
+
+  return null;
+}
+
+function getSizeBtnText() {
+  initSizeFilterFromSettings();
+  const sf = fitState.sizeFilter;
+  if (!sf || !sf.selected || sf.selected.size === 0) return '📏 SIZES: ALL ▾';
+  const arr = Array.from(sf.selected);
+  if (arr.length <= 2) return `📏 SIZES: ${arr.join(', ')} ▾`;
+  return `📏 SIZES: ${arr.length} SELECTED ▾`;
+}
+
+function getSizeBtnClass() {
+  initSizeFilterFromSettings();
+  const sf = fitState.sizeFilter;
+  if (!sf || !sf.selected || sf.selected.size === 0) return '';
+  return ' active';
+}
+
 // Monte-Carlo budget solver for assembling whole outfits within budget
 function pickBudgetFitCombinations(toSpinSlotIds) {
   if (fitState.priceFilter.mode !== 'total') return null;
@@ -316,6 +417,7 @@ function getMannequinPool(slotId, options = {}) {
           url: c.url || null,
           closetId: c.id,
           sourceKey: c.sourceKey || null,
+          matchedSize: c.notes && /size\s+([a-z0-9.]+)/i.test(c.notes) ? c.notes.match(/size\s+([a-z0-9.]+)/i)[1].toUpperCase() : 'OWNED',
         });
       }
     }
@@ -336,6 +438,10 @@ function getMannequinPool(slotId, options = {}) {
       if (maxPriceCap != null && p.price != null && p.price > maxPriceCap) continue;
       if (minPriceFloor != null && p.price != null && p.price < minPriceFloor) continue;
 
+      // Size matching check
+      const matchedSize = getProductMatchedSize(p, slotDef.category);
+      if (!matchedSize) continue;
+
       pool.push({
         id: p.key,
         isCloset: false,
@@ -348,6 +454,7 @@ function getMannequinPool(slotId, options = {}) {
         closetId: null,
         sourceKey: p.key,
         onSale: p.onSale,
+        matchedSize: matchedSize,
       });
     }
   }
@@ -549,11 +656,15 @@ function renderSlotDisplay(slotId) {
 
   if (metaBox) {
     const hasStoreUrl = !item.isCloset && !!item.url;
+    const sizeBadge = item.matchedSize && item.matchedSize !== 'ALL' && item.matchedSize !== 'OWNED'
+      ? `<span class="m-meta-size-badge" title="In stock in size ${esc(item.matchedSize)}">SIZE: ${esc(item.matchedSize)}</span>`
+      : '';
     metaBox.innerHTML = `
       <div class="m-meta-brand">${esc(item.brand)}</div>
       <div class="m-meta-title" title="${esc(item.title)}">${esc(item.title)}</div>
       <div class="m-meta-row">
         <span class="m-meta-price">${esc(priceStr)}</span>
+        ${sizeBadge}
         ${hasStoreUrl ? `<button type="button" class="m-meta-store-btn" data-buy-url="${esc(item.url)}" title="Open store in browser: ${esc(item.brand || 'Store')}">OPEN STORE ↗</button>` : ''}
       </div>
     `;
@@ -596,10 +707,14 @@ function updateFitSummary() {
   const rowsHtml = pieces.map(({ id, item }) => {
     const slotDef = MANNEQUIN_SLOTS.find((s) => s.id === id);
     const hasUrl = !item.isCloset && !!item.url;
+    const sizePill = item.matchedSize && item.matchedSize !== 'ALL' && item.matchedSize !== 'OWNED'
+      ? `<span class="p-size-tag">${esc(item.matchedSize)}</span>`
+      : '';
     return `
       <div class="summary-piece-row ${hasUrl ? 'clickable' : ''}" ${hasUrl ? `data-buy-url="${esc(item.url)}" title="Click to open store in browser: ${esc(item.brand || 'Store')}"` : ''}>
         <span class="p-icon">${slotDef.icon}</span>
         <span class="p-title">${esc(item.title)}</span>
+        ${sizePill}
         <span class="p-badge ${item.isCloset ? 'owned' : 'cop'}">${item.isCloset ? 'OWNED' : 'COP'}</span>
         <span class="p-price">${item.price != null ? money(item.price, item.currency) : ''}</span>
         ${hasUrl ? `<button type="button" class="p-row-open-btn" data-buy-url="${esc(item.url)}" title="Open in browser">↗</button>` : ''}
@@ -634,6 +749,10 @@ function updateFitSummary() {
   }
   if (pf.mode === 'item' && (pf.itemMin != null || pf.itemMax != null)) {
     filterBadges.push(`<span class="summary-filter-badge">💰 ITEM: ${pf.itemMax != null ? `<$${pf.itemMax}` : ''}</span>`);
+  }
+  const sizeF = fitState.sizeFilter;
+  if (sizeF && sizeF.selected && sizeF.selected.size > 0) {
+    filterBadges.push(`<span class="summary-filter-badge">📏 SIZES: ${Array.from(sizeF.selected).join(', ')}</span>`);
   }
 
   summaryEl.innerHTML = `
@@ -825,6 +944,111 @@ function renderPriceDrawerHtml() {
   `;
 }
 
+function renderSizeDrawerHtml() {
+  initSizeFilterFromSettings();
+  const sf = fitState.sizeFilter;
+  const inStockCounts = {};
+  for (const p of (state.data.products || [])) {
+    if (p.gone || !p.available) continue;
+    if (Array.isArray(p.sizes)) {
+      for (const s of p.sizes) {
+        if (typeof s === 'string' || s.inStock !== false) {
+          const name = (typeof s === 'string' ? s : s.name || '').trim();
+          if (name) inStockCounts[name] = (inStockCounts[name] || 0) + 1;
+        }
+      }
+    }
+  }
+
+  function getCount(target) {
+    let total = 0;
+    for (const [stock, count] of Object.entries(inStockCounts)) {
+      if (matchesSingleSize(stock, target)) total += count;
+    }
+    return total;
+  }
+
+  function renderChip(sz) {
+    const isSel = sf.selected.has(sz);
+    const cnt = getCount(sz);
+    return `
+      <button type="button" class="size-chip-btn${isSel ? ' on' : ''}" data-size-chip="${esc(sz)}" title="${isSel ? 'Click to deselect size ' + sz : 'Click to select size ' + sz}">
+        <span class="size-chip-check">${isSel ? '✓' : '+'}</span>
+        <span class="size-chip-name">${esc(sz)}</span>
+        <span class="size-chip-cnt">${cnt}</span>
+      </button>
+    `;
+  }
+
+  const activeChips = Array.from(sf.selected).map((sz) => `
+    <span class="active-size-tag" data-remove-size="${esc(sz)}" title="Click to remove ${esc(sz)}">
+      ${esc(sz)} <span class="tag-x">✕</span>
+    </span>
+  `).join('');
+
+  const apparelSizes = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+  const shoeSizes = ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13', '14', '15', '16'];
+  const waistSizes = ['28', '30', '32', '33', '34', '36', '38', '40', '42'];
+
+  return `
+    <div class="studio-filter-drawer size-drawer" id="size-filter-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span class="drawer-icon">📏</span>
+          <b>SIZE CURATION</b>
+          <span class="drawer-hint">Only spin store pieces in stock in your sizes (e.g. Large, Size 14 shoes)</span>
+        </div>
+
+        <div class="drawer-actions">
+          <button class="btn small" id="sizes-sync-profile-btn" title="Sync sizes from your main feed profile">SYNC PROFILE</button>
+          <button class="btn small" id="sizes-clear-btn" title="Allow clothes of all sizes">CLEAR ALL</button>
+          <button class="drawer-close-btn" id="close-size-drawer-btn" title="Close Drawer">✕</button>
+        </div>
+      </div>
+
+      <div class="drawer-body">
+        <div class="size-active-bar">
+          <span class="size-active-label">ACTIVE SIZES:</span>
+          <div class="size-active-chips">
+            ${activeChips.length ? activeChips : '<span class="size-active-none">ALL SIZES ALLOWED (Click any size below to filter)</span>'}
+          </div>
+        </div>
+
+        <!-- Section 1: Tops & Outerwear -->
+        <div class="size-section">
+          <div class="size-sec-title">👕 APPAREL (Tees, Hoodies, Jackets & Bottoms):</div>
+          <div class="size-chips-grid">
+            ${apparelSizes.map(renderChip).join('')}
+          </div>
+        </div>
+
+        <!-- Section 2: Footwear / Kicks -->
+        <div class="size-section">
+          <div class="size-sec-title">👟 FOOTWEAR / KICKS (Shoe Sizes):</div>
+          <div class="size-chips-grid">
+            ${shoeSizes.map(renderChip).join('')}
+          </div>
+        </div>
+
+        <!-- Section 3: Bottoms Waist -->
+        <div class="size-section">
+          <div class="size-sec-title">👖 PANTS & SHORTS WAIST:</div>
+          <div class="size-chips-grid">
+            ${waistSizes.map(renderChip).join('')}
+          </div>
+        </div>
+
+        <!-- Section 4: Custom Size Adder -->
+        <div class="size-custom-row">
+          <span class="custom-size-lbl">TYPE CUSTOM SIZE:</span>
+          <input type="text" id="custom-size-input" placeholder="e.g. 2XLT, O/S, 4.5..." maxlength="12" spellcheck="false">
+          <button class="btn small" id="add-custom-size-btn">+ ADD SIZE</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // ---------------------------------------------------------------- Main Tab Render
 function renderSpinner() {
   const container = $('#spinnerview');
@@ -866,6 +1090,11 @@ function renderSpinner() {
             ${getPriceBtnText()}
           </button>
 
+          <!-- Size Filter Drawer Toggle -->
+          <button id="toggle-size-filter-btn" class="filter-pill-btn${getSizeBtnClass()}" title="Filter by garment and shoe sizes (e.g. Large, Size 14)">
+            ${getSizeBtnText()}
+          </button>
+
           <button id="reset-fit-btn" class="btn small" title="Revert pieces back to silhouette emoji cards">↺ RESET FIT</button>
           <button id="lock-all-btn" class="btn small" title="Lock all slots">🔒 LOCK ALL</button>
           <button id="unlock-all-btn" class="btn small" title="Unlock all slots">🔓 UNLOCK ALL</button>
@@ -878,6 +1107,9 @@ function renderSpinner() {
 
       <!-- Price Filter Drawer (collapsible) -->
       ${fitState.showPriceDrawer ? renderPriceDrawerHtml() : ''}
+
+      <!-- Size Filter Drawer (collapsible) -->
+      ${fitState.showSizeDrawer ? renderSizeDrawerHtml() : ''}
 
       <!-- Main Stage: Center Silhouette + Side Summary -->
       <div class="studio-stage">
@@ -1232,6 +1464,7 @@ function bindMannequinEvents() {
     if (e.target.closest('#toggle-store-filter-btn')) {
       fitState.showStoreDrawer = !fitState.showStoreDrawer;
       fitState.showPriceDrawer = false;
+      fitState.showSizeDrawer = false;
       renderSpinner();
       return;
     }
@@ -1240,6 +1473,16 @@ function bindMannequinEvents() {
     if (e.target.closest('#toggle-price-filter-btn')) {
       fitState.showPriceDrawer = !fitState.showPriceDrawer;
       fitState.showStoreDrawer = false;
+      fitState.showSizeDrawer = false;
+      renderSpinner();
+      return;
+    }
+
+    // 12b. Toggle Size Filter Drawer
+    if (e.target.closest('#toggle-size-filter-btn')) {
+      fitState.showSizeDrawer = !fitState.showSizeDrawer;
+      fitState.showStoreDrawer = false;
+      fitState.showPriceDrawer = false;
       renderSpinner();
       return;
     }
@@ -1254,6 +1497,13 @@ function bindMannequinEvents() {
     // 14. Close Price Filter Drawer
     if (e.target.closest('#close-price-drawer-btn')) {
       fitState.showPriceDrawer = false;
+      renderSpinner();
+      return;
+    }
+
+    // 14b. Close Size Filter Drawer
+    if (e.target.closest('#close-size-drawer-btn')) {
+      fitState.showSizeDrawer = false;
       renderSpinner();
       return;
     }
@@ -1347,6 +1597,67 @@ function bindMannequinEvents() {
       fitState.priceFilter.itemMax = null;
       renderSpinner();
       return;
+    }
+
+    // 24. Size Chip Click (Toggle)
+    const sizeChip = e.target.closest('[data-size-chip]');
+    if (sizeChip) {
+      const sz = sizeChip.dataset.sizeChip;
+      if (fitState.sizeFilter.selected.has(sz)) {
+        fitState.sizeFilter.selected.delete(sz);
+      } else {
+        fitState.sizeFilter.selected.add(sz);
+      }
+      renderSpinner();
+      return;
+    }
+
+    // 25. Remove Active Size Tag
+    const removeSize = e.target.closest('[data-remove-size]');
+    if (removeSize) {
+      fitState.sizeFilter.selected.delete(removeSize.dataset.removeSize);
+      renderSpinner();
+      return;
+    }
+
+    // 26. Sync Sizes from Profile Settings
+    if (e.target.closest('#sizes-sync-profile-btn')) {
+      fitState.sizeFilter.selected.clear();
+      if (state.data && state.data.settings && Array.isArray(state.data.settings.sizes)) {
+        for (const s of state.data.settings.sizes) fitState.sizeFilter.selected.add(s);
+      } else if (state.sizes) {
+        for (const s of state.sizes) fitState.sizeFilter.selected.add(s);
+      }
+      renderSpinner();
+      return;
+    }
+
+    // 27. Clear All Sizes
+    if (e.target.closest('#sizes-clear-btn')) {
+      fitState.sizeFilter.selected.clear();
+      renderSpinner();
+      return;
+    }
+
+    // 28. Add Custom Size Button
+    if (e.target.closest('#add-custom-size-btn')) {
+      const inp = $('#custom-size-input');
+      if (inp && inp.value.trim()) {
+        fitState.sizeFilter.selected.add(inp.value.trim().toUpperCase());
+        renderSpinner();
+      }
+      return;
+    }
+  });
+
+  // Enter key for adding custom size
+  container.addEventListener('keydown', (e) => {
+    if (e.target && e.target.id === 'custom-size-input' && e.key === 'Enter') {
+      e.preventDefault();
+      if (e.target.value.trim()) {
+        fitState.sizeFilter.selected.add(e.target.value.trim().toUpperCase());
+        renderSpinner();
+      }
     }
   });
 

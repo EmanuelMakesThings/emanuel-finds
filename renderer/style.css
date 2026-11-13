@@ -1600,6 +1600,191 @@ button.sil-badge.clickable-badge:hover {
 .buy-item-price { font-family: var(--pixel); font-size: 11px; color: var(--yellow); margin-top: 3px; }
 .buy-link-btn { flex: none; font-family: var(--pixel); font-size: 8px; }
 
+/* Size Filter Drawer */
+.size-active-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #000;
+  border: 1px solid #3b2a78;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.size-active-label {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--yellow);
+  flex: none;
+}
+
+.size-active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.size-active-none {
+  font-family: var(--pixel);
+  font-size: 7.5px;
+  color: var(--dim);
+}
+
+.active-size-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--navy);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--pixel);
+  font-size: 8px;
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 0 0 4px rgba(44, 246, 255, 0.2);
+}
+
+.active-size-tag:hover {
+  background: rgba(255, 77, 94, 0.2);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.active-size-tag .tag-x {
+  font-size: 9px;
+  color: var(--dim);
+}
+
+.active-size-tag:hover .tag-x {
+  color: var(--red);
+}
+
+.size-section {
+  margin-bottom: 12px;
+}
+
+.size-sec-title {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--cyan);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.size-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.size-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #080214;
+  border: 1px solid #2d1d58;
+  padding: 4px 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s ease;
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--text);
+}
+
+.size-chip-btn:hover {
+  border-color: var(--cyan);
+  background: #130628;
+  color: #fff;
+}
+
+.size-chip-btn.on {
+  border-color: var(--cyan);
+  background: rgba(44, 246, 255, 0.18);
+  color: var(--cyan);
+  box-shadow: 0 0 6px rgba(44, 246, 255, 0.35);
+  text-shadow: 0 0 4px var(--cyan);
+}
+
+.size-chip-check {
+  font-family: var(--pixel);
+  font-size: 7.5px;
+  color: var(--dim);
+}
+
+.size-chip-btn.on .size-chip-check {
+  color: var(--green);
+  font-weight: bold;
+}
+
+.size-chip-cnt {
+  font-family: var(--term);
+  font-size: 15px;
+  color: var(--dim);
+  line-height: 1;
+}
+
+.size-chip-btn.on .size-chip-cnt {
+  color: #fff;
+}
+
+.size-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #3b2a78;
+  flex-wrap: wrap;
+}
+
+.custom-size-lbl {
+  font-family: var(--pixel);
+  font-size: 7.5px;
+  color: var(--yellow);
+}
+
+.size-custom-row input {
+  width: 140px;
+  background: #000;
+  border: 1px solid #443272;
+  color: #fff;
+  font-family: var(--pixel);
+  font-size: 8px;
+  padding: 4px 8px;
+}
+
+.m-meta-size-badge {
+  font-family: var(--pixel);
+  font-size: 7px;
+  background: rgba(44, 246, 255, 0.15);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  padding: 1px 5px;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.m-meta-size-badge.dim {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #555;
+  color: var(--dim);
+}
+
+.p-size-tag {
+  font-family: var(--pixel);
+  font-size: 7px;
+  background: #000;
+  border: 1px solid #3b2a78;
+  color: var(--cyan);
+  padding: 1px 4px;
+  flex: none;
+  line-height: 1;
+}
+
 /* Mobile Adjustments */
 body.mobile .studio-stage {
   grid-template-columns: 1fr;
