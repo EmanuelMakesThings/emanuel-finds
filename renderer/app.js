@@ -284,7 +284,7 @@ function renderMain() {
   }
   if (isSpinner) {
     renderSpinner();
-    $('#st-count').textContent = '🎰 8 REELS READY';
+    $('#st-count').textContent = '🎰 STREETWEAR MANNEQUIN READY';
     return;
   }
   compute();

@@ -1,12 +1,34 @@
 # Emanuel Finds
 
-> **A retro CRT desktop & mobile aggregator for streetwear, archival drops, and vintage grails.**
+> **A retro CRT desktop & mobile aggregator, wardrobe vault, and streetwear mannequin fit engine.**
 
-Built with an authentic Windows 95 / CRT cyberpunk aesthetic, **Emanuel Finds** monitors your favorite independent fashion houses, stockists, and retail brands across the web. It pulls drops into a single unified grid, tracks markdowns and restocks on an automated cycle, saves photos locally for offline browsing, and cross-syncs with your phone over your local network—zero cloud accounts, zero ads, and zero algorithmic feeds.
+[![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-2cf6ff?style=flat-square)](https://github.com/EmanuelMakesThings/emanuel-finds/releases)
+[![Platform Desktop + Android](https://img.shields.io/badge/platform-Windows%20%7C%20Android-ffe14a?style=flat-square)](https://github.com/EmanuelMakesThings/emanuel-finds)
+[![License MIT](https://img.shields.io/badge/license-MIT-5dff8f?style=flat-square)](LICENSE)
+
+Built with an authentic Windows 95 / CRT cyberpunk aesthetic, **Emanuel Finds** monitors your favorite independent fashion houses, Christian streetwear stockists, and retail brands across the web. It pulls drops into a single unified grid, tracks markdowns and restocks on an automated cycle, saves photos locally for offline browsing, and cross-syncs with your phone over your local network—zero cloud accounts, zero ads, and zero algorithmic feeds.
+
+> **NEW IN v1.1: The Streetwear Mannequin & Fit Engine Update** — Spin, layer, curate, and budget full head-to-toe fits with upper-body jacket + tee layering, brand inclusion/exclusion filters, and an automated Monte-Carlo budget solver.
 
 ---
 
-## Screenshots
+## Highlights in v1.1: The Fit Spinner
+
+<div align="center">
+  <img src="docs/screenshots/spinner.png" alt="Emanuel Finds v1.1 Fit Spinner Mannequin" width="850">
+  <p><em>The v1.1 Fit Spinner: anatomical streetwear mannequin with dual jacket + tee torso layering, eye-friendly cyber segmented pills, and smart budget solver.</em></p>
+</div>
+
+<br>
+
+| 💰 Smart Budget & Price Solver | 🏪 Store Inclusion & Exclusion Engine |
+|:---:|:---:|
+| <img src="docs/screenshots/spinner-budget.png" alt="Smart Budget Drawer" width="420"> | <img src="docs/screenshots/spinner-stores.png" alt="Store Filter Drawer" width="420"> |
+| *Set full fit budgets ($100, $150, $200) or per-item brackets.* | *Include specific brands or exclude high-ticket luxury archives.* |
+
+---
+
+## Desktop & Mobile Gallery
 
 <div align="center">
   <img src="docs/screenshots/catalog.png" alt="Emanuel Finds Catalog" width="850">
@@ -15,7 +37,7 @@ Built with an authentic Windows 95 / CRT cyberpunk aesthetic, **Emanuel Finds** 
 
 <br>
 
-| Product Detail & Photo Inspector | My Closet & Outfit Canvas |
+| Product Detail & Photo Inspector | My Closet & Wardrobe Vault |
 |:---:|:---:|
 | <img src="docs/screenshots/detail.png" alt="Detail Modal" width="420"> | <img src="docs/screenshots/outfits.png" alt="Outfit Builder" width="420"> |
 
@@ -29,7 +51,13 @@ Built with an authentic Windows 95 / CRT cyberpunk aesthetic, **Emanuel Finds** 
 
 ## Key Features
 
-- **🎰 Slot-Machine Fit Spinner**: An 8-reel retro slot machine (Hat, Shirt, Hoodie/Jacket, Pants, Shorts, Socks, Shoes, Accessories). Spin all reels with `Spacebar`, lock fire pieces, re-roll individual items, and pool randomly across your closet, live store drops, or on-sale items. Includes synthesized retro mechanical ratchet audio clicks and a jackpot chime!
+- **🎰 Interactive Streetwear Mannequin (The Fit Spinner)**:
+  - **Head-to-Toe Anatomy**: Anatomically proportioned interactive cards (Headwear, Accessories/Chain, Jacket/Hoodie, Tee/Top, Pants/Shorts, Kicks).
+  - **Upper-Body Torso Layering**: Wear and spin both a Jacket/Hoodie **AND** a Tee simultaneously with realistic broad-shoulder proportions, plus a 1-click toggle for warm-weather fits.
+  - **🏪 Store Curation (Include/Exclude)**: Filter exactly which shops items are pulled from. Choose `INCLUDE SELECTED` to roll from only your favorite 2-3 brands, or `EXCLUDE SELECTED` to filter out luxury archive stores.
+  - **💰 Automated Budget Solver**: Set a total outfit budget (e.g., `Max: $200`) or per-item price brackets (e.g., `Under $50/piece`). The engine evaluates combinations across the catalogue to assemble outfits guaranteed to stay within your spending cap.
+  - **🕶️ Eye-Friendly Dark Controls**: Replaced native OS dropdowns with dark CRT segmented cyber buttons (`[ALL] [MY CLOSET] [STORE DROPS] [ON SALE]`) to eliminate white flashes.
+  - **Audio FX**: Authentic synthesized ratchet reel ticks and winning jackpot chimes via the Web Audio API.
 - **Unified Multi-Store Catalog**: Aggregates apparel, hoodies, tees, outerwear, and accessories from diverse stockists (Shopify public JSON collections, Next.js PLP endpoints, and custom scrapers) into one unified searchable library.
 - **Automated Price Drop & Restock Radar**: Background scanner scheduled every 6 hours (8:00 AM, 2:00 PM, 8:00 PM, 2:00 AM) that compares historical pricing and variant stock to alert you on wishlist drops or surprise restocks.
 - **Offline-First Photo Caching**: Downloaded product images and metadata are stored locally in an in-memory SHA-1 cache. You can browse your entire catalog on a plane, subway, or without an active internet connection.

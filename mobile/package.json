@@ -1,6 +1,6 @@
 {
   "name": "emanuel-finds-mobile",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Android build of Emanuel Finds (shares the desktop app's interface and scraper)",
   "scripts": {
