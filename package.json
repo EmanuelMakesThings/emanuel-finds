@@ -1,0 +1,45 @@
+{
+  "name": "emanuel-finds",
+  "version": "1.0.0",
+  "description": "Retro CRT street and archival fashion tracker",
+  "main": "main.js",
+  "author": "Emanuel",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "fonts": "node scripts/copy-fonts.js",
+    "scrape-test": "node scripts/scrape-test.js",
+    "dist": "node scripts/copy-fonts.js && electron-builder --win dir"
+  },
+  "devDependencies": {
+    "@fontsource/press-start-2p": "^5.0.0",
+    "@fontsource/vt323": "^5.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "local.emanuelfinds.app",
+    "productName": "Emanuel Finds",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "Emanuel-Finds.exe"
+    }
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4"
+  }
+}

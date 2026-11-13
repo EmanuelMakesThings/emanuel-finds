@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' cfimg: data: blob:;">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Emanuel Finds</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="screen">
+
+  <header id="titlebar">
+    <span class="tb-icon" aria-hidden="true"></span>
+    <span class="tb-title">EMANUEL FINDS v1.0</span>
+    <span class="tb-spacer"></span>
+    <button class="tb-btn" data-win="min" title="Minimize" aria-label="Minimize">_</button>
+    <button class="tb-btn" data-win="max" title="Maximize" aria-label="Maximize">&#9633;</button>
+    <button class="tb-btn" data-win="close" title="Close" aria-label="Close">&times;</button>
+  </header>
+
+  <nav id="tabs" role="tablist"></nav>
+
+  <div id="body">
+    <aside id="sidebar">
+      <fieldset>
+        <legend>SEARCH</legend>
+        <input id="q" type="search" placeholder="hoodie, cream, zip..." autocomplete="off" spellcheck="false">
+      </fieldset>
+
+      <fieldset>
+        <legend>SORT BY</legend>
+        <select id="sort">
+          <option value="auto">Best for this tab</option>
+          <option value="newest">Newest first</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="discount">Biggest discount</option>
+          <option value="az">Name A-Z</option>
+          <option value="store">Store</option>
+        </select>
+      </fieldset>
+
+      <fieldset>
+        <legend>SHOW</legend>
+        <label class="check"><input type="checkbox" id="f-mens"><span>Menswear only</span></label>
+        <label class="check"><input type="checkbox" id="f-stock"><span>In stock only</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>PRICE</legend>
+        <div class="price-row">
+          <input id="p-min" type="number" min="0" placeholder="MIN" aria-label="Minimum price">
+          <span>to</span>
+          <input id="p-max" type="number" min="0" placeholder="MAX" aria-label="Maximum price">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>CURRENCY</legend>
+        <select id="currency">
+          <option value="auto">Store Currency (Auto)</option>
+          <option value="USD">USD ($)</option>
+          <option value="CAD">CAD (CA$)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="AUD">AUD (A$)</option>
+        </select>
+      </fieldset>
+
+      <fieldset>
+        <legend>CATEGORY</legend>
+        <div id="f-cats" class="chips"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>MY SIZE</legend>
+        <div id="f-sizes" class="chips"></div>
+        <p class="hint">Shows items with your size in stock.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>STORES</legend>
+        <div id="f-stores" class="checklist"></div>
+      </fieldset>
+
+      <button id="reset" class="btn wide">RESET FILTERS</button>
+      <button id="filters-done" class="btn wide primary mobile-only">SHOW RESULTS</button>
+    </aside>
+
+    <main id="main">
+      <div id="banner"></div>
+      <div id="grid"></div>
+      <div id="more"></div>
+      <div id="storesview" hidden></div>
+      <div id="closetview" hidden></div>
+    </main>
+  </div>
+
+  <footer id="statusbar">
+    <button id="filters-open" class="btn small mobile-only">FILTERS</button>
+    <span id="st-count" class="st-cell"></span>
+    <span id="st-refresh" class="st-cell grow"></span>
+    <button id="sync-open" class="btn small" title="Sync wishlist, closet, outfits and custom stores between PC and Phone">SYNC [QR]</button>
+    <button id="crt-toggle" class="btn small" title="Turn the CRT effect on or off">CRT: ON</button>
+    <button id="refresh" class="btn small primary">REFRESH STORES</button>
+  </footer>
+
+  <div id="alert-banner" hidden>
+    <div class="alert-content">
+      <span class="alert-icon">&#9888;</span>
+      <span id="alert-text"></span>
+      <button id="alert-close" class="tb-btn">&times;</button>
+    </div>
+  </div>
+
+  <div id="sync-modal" hidden>
+    <div class="window" role="dialog" aria-modal="true" aria-labelledby="sync-title">
+      <div class="win-title"><span id="sync-title">DEVICE SYNC (PC &harr; PHONE)</span><button class="tb-btn" id="sync-close" aria-label="Close">&times;</button></div>
+      <div class="win-body" id="sync-body"></div>
+    </div>
+  </div>
+
+  <div id="modal" hidden>
+    <div class="window" role="dialog" aria-modal="true" aria-labelledby="m-title">
+      <div class="win-title"><span id="m-title"></span><button class="tb-btn" id="m-close" aria-label="Close">&times;</button></div>
+      <div class="win-body" id="m-body"></div>
+    </div>
+  </div>
+
+  <div id="progress" hidden>
+    <div class="window">
+      <div class="win-title"><span>DOWNLOADING CATALOGUE...</span></div>
+      <div class="win-body">
+        <div id="pg-list"></div>
+        <div class="bar"><div id="pg-bar"></div></div>
+        <p id="pg-text"></p>
+        <div class="pg-actions"><button id="pg-ok" class="btn primary" hidden>OK</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="boot"><pre id="boot-text"></pre></div>
+</div>
+
+<div id="crt" aria-hidden="true"></div>
+<script src="jsqr.js"></script>
+<script src="closet-ui.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+mobile/node_modules/
+
+# Production builds & binaries
+dist/
+/app/
+build/*.exe
+build/*.zip
+build/*.tar.gz
+*.exe
+*.apk
+*.lnk
+
+# Scraped catalogs & dynamic media (Legality & DMCA safety)
+catalogue.json
+catalogue.json.bak
+images/
+closet/
+*.img
+
+# Android / Mobile build files
+mobile/www/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/app/src/main/assets/public/
+mobile/android/app/src/main/assets/capacitor.config.json
+mobile/android/local.properties
+mobile/android/.idea/
+mobile/android/*.iml
+mobile/android/app/*.iml
+
+# System & IDE artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+
+# Scratch & temporary testing files
+scratch/
+test-output/
+tmp/

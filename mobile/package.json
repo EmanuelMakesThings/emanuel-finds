@@ -1,0 +1,25 @@
+{
+  "name": "emanuel-finds-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Android build of Emanuel Finds (shares the desktop app's interface and scraper)",
+  "scripts": {
+    "web": "node build.js",
+    "sync": "node build.js && cap sync android",
+    "apk": "node build.js && cap sync android && cd android && gradlew.bat assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/browser": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.7",
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "esbuild": "^0.24.0"
+  }
+}

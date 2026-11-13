@@ -1,0 +1,27 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('api', {
+  getData: () => ipcRenderer.invoke('data:get'),
+  refresh: () => ipcRenderer.invoke('refresh'),
+  toggleFavorite: (key) => ipcRenderer.invoke('fav:toggle', key),
+  open: (url) => ipcRenderer.invoke('open', url),
+  setSettings: (patch) => ipcRenderer.invoke('settings:set', patch),
+  addStore: (domain) => ipcRenderer.invoke('stores:add', domain),
+  removeStore: (id) => ipcRenderer.invoke('stores:remove', id),
+  toggleStore: (id) => ipcRenderer.invoke('stores:toggle', id),
+  closetAddUrl: (url) => ipcRenderer.invoke('closet:addUrl', url),
+  closetAddProduct: (key) => ipcRenderer.invoke('closet:addProduct', key),
+  closetSave: (fields) => ipcRenderer.invoke('closet:save', fields),
+  closetRemove: (id) => ipcRenderer.invoke('closet:remove', id),
+  outfitSave: (outfit) => ipcRenderer.invoke('outfit:save', outfit),
+  outfitRemove: (id) => ipcRenderer.invoke('outfit:remove', id),
+  startSyncServer: () => ipcRenderer.invoke('sync:start'),
+  stopSyncServer: () => ipcRenderer.invoke('sync:stop'),
+  exportSyncBundle: () => ipcRenderer.invoke('sync:export'),
+  importSyncBundle: (raw) => ipcRenderer.invoke('sync:import', raw),
+  win: (action) => ipcRenderer.send('win', action),
+  onProgress: (fn) => ipcRenderer.on('refresh:progress', (_e, p) => fn(p)),
+  onData: (fn) => ipcRenderer.on('data:changed', (_e, d) => fn(d)),
+  onWishlistAlerts: (fn) => ipcRenderer.on('wishlist:alerts', (_e, a) => fn(a)),
+  onSyncComplete: (fn) => ipcRenderer.on('sync:complete', (_e, s) => fn(s)),
+});

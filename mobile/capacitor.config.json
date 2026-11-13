@@ -1,0 +1,14 @@
+{
+  "appId": "local.clothesfinder.app",
+  "appName": "Emanuel Finds",
+  "webDir": "www",
+  "backgroundColor": "#05010d",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "force"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
