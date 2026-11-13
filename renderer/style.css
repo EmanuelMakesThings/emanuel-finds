@@ -530,3 +530,142 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
 .sync-status-msg.ok { color: var(--green); }
 .sync-status-msg.err { color: var(--pink); }
 .sync-status-msg.busy { color: var(--amber); }
+
+/* ---------- Fit Spinner (Slot Machine) ---------- */
+.spinner-container { max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; color: var(--text); }
+
+.spinner-marquee {
+  background: #000; border: 2px solid var(--magenta); padding: 12px 16px;
+  box-shadow: 0 0 16px rgba(255, 63, 208, 0.4), inset 0 0 12px rgba(255, 63, 208, 0.2);
+  text-align: center;
+}
+.marquee-title {
+  font-family: var(--pixel); font-size: 16px; color: var(--yellow); letter-spacing: 2px;
+  text-shadow: 2px 2px 0 var(--magenta), 0 0 12px rgba(255, 225, 74, 0.7); margin-bottom: 4px;
+}
+.marquee-sub { font-family: var(--term); font-size: 19px; color: var(--cyan); letter-spacing: 1px; }
+
+.spinner-control-panel {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+  background: var(--card); border: 2px solid #3b2a78; padding: 10px 14px;
+}
+.spin-all-btn {
+  font-family: var(--pixel); font-size: 11px; padding: 10px 18px; letter-spacing: 1px;
+  box-shadow: 3px 3px 0 #000, 0 0 12px rgba(255, 225, 74, 0.4);
+}
+.panel-group { display: flex; align-items: center; gap: 8px; }
+.panel-label { font-family: var(--pixel); font-size: 8.5px; color: var(--yellow); }
+.panel-select { height: 32px; background: #000; color: var(--cyan); border: 2px solid #3b2a78; padding: 2px 8px; font-family: var(--term); font-size: 18px; }
+.panel-btn-group { display: flex; gap: 6px; margin-left: auto; }
+
+.spinner-reels-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px;
+}
+
+.reel-box {
+  background: var(--card); border: 2px solid #3b2a78; display: flex; flex-direction: column;
+  position: relative; transition: border-color 0.1s, box-shadow 0.1s;
+}
+.reel-box.locked {
+  border-color: var(--yellow);
+  box-shadow: 0 0 14px rgba(255, 225, 74, 0.4), inset 0 0 8px rgba(255, 225, 74, 0.15);
+}
+.reel-box.disabled { opacity: 0.42; filter: grayscale(0.8); }
+
+.reel-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 7px 9px;
+  background: #110626; border-bottom: 1px solid #2d1d58;
+}
+.reel-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+.reel-toggle input { width: 16px; height: 16px; accent-color: var(--magenta); margin: 0; cursor: pointer; }
+.reel-icon { font-size: 14px; }
+.reel-name { font-family: var(--pixel); font-size: 8px; color: var(--yellow); white-space: nowrap; }
+.reel-source-select {
+  height: 24px; font-size: 14px; background: #000; color: var(--cyan); border: 1px solid #4d387f;
+  padding: 0 4px; font-family: var(--term);
+}
+
+.reel-viewport {
+  aspect-ratio: 4 / 5; position: relative; overflow: hidden; background: #070211; cursor: pointer;
+  box-shadow: inset 0 18px 22px -6px rgba(0, 0, 0, 0.9), inset 0 -18px 22px -6px rgba(0, 0, 0, 0.9);
+}
+.reel-preview { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.reel-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reel-box.spinning .reel-preview { animation: reelSpinVibe 0.08s infinite alternate; }
+@keyframes reelSpinVibe {
+  0% { transform: translateY(-4px) scaleY(1.06); filter: blur(1.5px); }
+  100% { transform: translateY(4px) scaleY(1.06); filter: blur(1.5px); }
+}
+.reel-glass-reflection {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 45%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.reel-details { padding: 8px 9px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.slot-badge-row { display: flex; margin-bottom: 2px; }
+.slot-badge { font-family: var(--pixel); font-size: 7.5px; padding: 2px 5px; box-shadow: 1px 1px 0 #000; }
+.slot-badge.owned { background: var(--green); color: #000; font-weight: bold; }
+.slot-badge.sale { background: var(--magenta); color: #fff; }
+.slot-badge.store { background: var(--cyan); color: #000; }
+.slot-brand { font-family: var(--pixel); font-size: 8px; color: var(--cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot-title { font-size: 17px; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 34px; }
+.slot-meta { font-size: 15px; color: var(--dim); }
+.slot-price { font-family: var(--pixel); font-size: 11px; color: var(--yellow); margin-top: auto; padding-top: 4px; }
+
+.reel-footer {
+  display: flex; gap: 6px; padding: 7px 9px; background: rgba(0, 0, 0, 0.35); border-top: 1px solid #2d1d58;
+}
+.reel-lock-btn { flex: 1; font-family: var(--pixel); font-size: 8px; padding: 4px 6px; }
+.reel-roll-btn { flex: 1; font-family: var(--pixel); font-size: 8px; padding: 4px 6px; }
+
+.spinner-summary-container { margin-top: 8px; }
+.spinner-empty-state { text-align: center; padding: 20px; color: var(--dim); font-size: 18px; border: 1px dashed #3b2a78; }
+.spinner-summary-box {
+  background: #000; border: 2px solid var(--magenta); padding: 14px 16px;
+  box-shadow: 0 0 16px rgba(255, 63, 208, 0.35), inset 0 0 10px rgba(255, 63, 208, 0.15);
+}
+.summary-fit-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.summary-fit-title { font-family: var(--pixel); font-size: 11px; color: var(--yellow); }
+.summary-fit-cost { display: flex; flex-wrap: wrap; gap: 14px; font-family: var(--term); font-size: 19px; }
+.cost-stat b { color: var(--green); font-family: var(--pixel); font-size: 10px; }
+.cost-stat.total b { color: var(--yellow); font-size: 12px; }
+
+.summary-thumbs-row {
+  display: flex; gap: 10px; overflow-x: auto; padding: 6px 0 12px; border-bottom: 1px dashed #3b2a78; margin-bottom: 12px;
+}
+.summary-thumb {
+  width: 70px; height: 88px; background: #070211; border: 2px solid #3b2a78; flex: none; position: relative; overflow: hidden;
+}
+.summary-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.summary-thumb-tag {
+  position: absolute; bottom: 2px; right: 2px; font-family: var(--pixel); font-size: 7px;
+  background: rgba(0, 0, 0, 0.85); color: var(--green); padding: 1px 3px;
+}
+.summary-actions-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.spinner-save-alert { margin-top: 10px; color: var(--green); font-family: var(--pixel); font-size: 9px; }
+
+/* Buy Store Items Modal */
+.buy-modal-content { max-width: 680px; width: 100%; }
+.buy-items-list { display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; padding-right: 4px; margin-top: 12px; }
+.buy-item-row {
+  display: flex; align-items: center; gap: 12px; background: #000; border: 2px solid #3b2a78; padding: 8px 12px;
+}
+.buy-item-pic { width: 56px; height: 70px; background: #070211; flex: none; border: 1px solid #555; }
+.buy-item-pic img { width: 100%; height: 100%; object-fit: cover; }
+.buy-item-info { flex: 1; min-width: 0; }
+.buy-item-store { font-family: var(--pixel); font-size: 8px; color: var(--cyan); }
+.buy-item-title { font-size: 18px; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.buy-item-price { font-family: var(--pixel); font-size: 11px; color: var(--yellow); margin-top: 3px; }
+.buy-link-btn { flex: none; font-family: var(--pixel); font-size: 8px; }
+
+/* Mobile Fit Spinner adjustments */
+body.mobile .spinner-reels-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+body.mobile .spinner-control-panel { flex-direction: column; align-items: stretch; gap: 8px; }
+body.mobile .spin-all-btn { width: 100%; padding: 12px 10px; font-size: 11px; text-align: center; }
+body.mobile .panel-group { width: 100%; }
+body.mobile .panel-select { flex: 1; }
+body.mobile .panel-btn-group { width: 100%; margin-left: 0; justify-content: space-between; }
+body.mobile .panel-btn-group .btn { flex: 1; padding: 8px 4px; font-size: 16px; }
+body.mobile .reel-header { flex-wrap: wrap; gap: 4px; }
+body.mobile .reel-source-select { width: 100%; }
+

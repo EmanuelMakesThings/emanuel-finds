@@ -53,6 +53,7 @@ const TABS = [
   { id: 'sale', label: 'ON SALE', title: 'ON SALE', sub: 'Every marked-down item, biggest discounts first.', sort: 'discount', hot: true },
   { id: 'drops', label: 'PRICE DROPS', title: 'PRICE DROPS', sub: 'Items that got cheaper since an earlier refresh.', sort: 'dropped', hot: true },
   { id: 'favs', label: '<span class="hrt">♥</span> FAVORITES', title: 'FAVORITES', sub: 'Your saved wishlist.', sort: 'newest' },
+  { id: 'spinner', label: '🎰 FIT SPINNER', title: 'THE FIT SPINNER', sub: 'Retro slot machine: spin, lock, and craft fresh fits from your closet and store drops.' },
   { id: 'closet', label: 'MY CLOSET', title: 'MY CLOSET', sub: 'Clothes you own, and the outfits you build from them. Saved for good.' },
   { id: 'stores', label: 'STORES', title: 'STORES', sub: 'The shops this catalogue is built from.' },
 ];
@@ -108,6 +109,7 @@ const inTab = {
   sale: (p) => p.onSale && !p.gone,
   drops: (p) => !!p.dropAt && !p.gone,
   favs: (p) => state.favs.has(p.key),
+  spinner: () => false,
   stores: () => false,
   closet: () => false,
 };
@@ -162,7 +164,7 @@ function compute() {
 function renderTabs() {
   const b = base();
   $('#tabs').innerHTML = TABS.map((t) => {
-    const n = t.id === 'stores' ? state.data.stores.length : t.id === 'closet' ? state.data.closet.length : b.filter(inTab[t.id]).length;
+    const n = t.id === 'stores' ? state.data.stores.length : t.id === 'closet' ? state.data.closet.length : t.id === 'spinner' ? 8 : b.filter(inTab[t.id]).length;
     return `<button class="tab${t.id === state.tab ? ' active' : ''}${t.hot && n ? ' hot' : ''}" role="tab" data-tab="${t.id}">${t.label}<span class="n">${n}</span></button>`;
   }).join('');
 }
@@ -261,11 +263,13 @@ function renderMain() {
   const tab = TABS.find((t) => t.id === state.tab);
   const isStores = state.tab === 'stores';
   const isCloset = state.tab === 'closet';
-  $('#grid').hidden = isStores || isCloset;
-  $('#more').hidden = isStores || isCloset;
+  const isSpinner = state.tab === 'spinner';
+  $('#grid').hidden = isStores || isCloset || isSpinner;
+  $('#more').hidden = isStores || isCloset || isSpinner;
   $('#storesview').hidden = !isStores;
   $('#closetview').hidden = !isCloset;
-  document.body.classList.toggle('nofilters', isStores || isCloset);
+  $('#spinnerview').hidden = !isSpinner;
+  document.body.classList.toggle('nofilters', isStores || isCloset || isSpinner);
   $('#banner').innerHTML = `<h1>${tab.title}</h1><p class="sub">${tab.sub}</p>` + (state.tab === 'sale' ? saleBar() : '');
 
   if (isStores) {
@@ -276,6 +280,11 @@ function renderMain() {
   if (isCloset) {
     renderCloset();
     $('#st-count').textContent = `${state.data.closet.length} OWNED · ${state.data.outfits.length} OUTFIT${state.data.outfits.length === 1 ? '' : 'S'}`;
+    return;
+  }
+  if (isSpinner) {
+    renderSpinner();
+    $('#st-count').textContent = '🎰 8 REELS READY';
     return;
   }
   compute();
@@ -296,7 +305,7 @@ function activeFilters() {
 
 let isAppendingMore = false;
 function showMore() {
-  if (state.tab === 'stores' || state.tab === 'closet' || state.shown >= state.list.length || isAppendingMore) return;
+  if (state.tab === 'stores' || state.tab === 'closet' || state.tab === 'spinner' || state.shown >= state.list.length || isAppendingMore) return;
   isAppendingMore = true;
   requestAnimationFrame(() => {
     try {

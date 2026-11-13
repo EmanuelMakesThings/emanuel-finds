@@ -8,7 +8,7 @@ const www = path.join(__dirname, 'www');
 fs.rmSync(www, { recursive: true, force: true });
 fs.mkdirSync(path.join(www, 'fonts'), { recursive: true });
 
-for (const f of ['style.css', 'app.js', 'closet-ui.js', 'jsqr.js']) fs.copyFileSync(path.join(root, 'renderer', f), path.join(www, f));
+for (const f of ['style.css', 'app.js', 'closet-ui.js', 'spinner-ui.js', 'jsqr.js']) fs.copyFileSync(path.join(root, 'renderer', f), path.join(www, f));
 for (const f of fs.readdirSync(path.join(root, 'renderer', 'fonts'))) {
   fs.copyFileSync(path.join(root, 'renderer', 'fonts', f), path.join(www, 'fonts', f));
 }

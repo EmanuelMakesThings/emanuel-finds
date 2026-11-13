@@ -29,6 +29,7 @@ Built with an authentic Windows 95 / CRT cyberpunk aesthetic, **Emanuel Finds** 
 
 ## Key Features
 
+- **🎰 Slot-Machine Fit Spinner**: An 8-reel retro slot machine (Hat, Shirt, Hoodie/Jacket, Pants, Shorts, Socks, Shoes, Accessories). Spin all reels with `Spacebar`, lock fire pieces, re-roll individual items, and pool randomly across your closet, live store drops, or on-sale items. Includes synthesized retro mechanical ratchet audio clicks and a jackpot chime!
 - **Unified Multi-Store Catalog**: Aggregates apparel, hoodies, tees, outerwear, and accessories from diverse stockists (Shopify public JSON collections, Next.js PLP endpoints, and custom scrapers) into one unified searchable library.
 - **Automated Price Drop & Restock Radar**: Background scanner scheduled every 6 hours (8:00 AM, 2:00 PM, 8:00 PM, 2:00 AM) that compares historical pricing and variant stock to alert you on wishlist drops or surprise restocks.
 - **Offline-First Photo Caching**: Downloaded product images and metadata are stored locally in an in-memory SHA-1 cache. You can browse your entire catalog on a plane, subway, or without an active internet connection.
