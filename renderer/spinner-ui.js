@@ -130,6 +130,24 @@ function playDiscardSound() {
   } catch (e) {}
 }
 
+function openExternalUrl(rawUrl) {
+  if (!rawUrl) return;
+  let url = String(rawUrl).trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = 'https://' + url;
+  }
+  try {
+    if (window.api && typeof window.api.open === 'function') {
+      window.api.open(url);
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  } catch (err) {
+    console.error('Failed to open url:', url, err);
+    try { window.open(url, '_blank', 'noopener,noreferrer'); } catch (e) {}
+  }
+}
+
 // ---------------------------------------------------------------- Store & Price Filter Helpers
 function isStoreAllowed(storeId) {
   const sf = fitState.storeFilter;
@@ -513,18 +531,31 @@ function renderSlotDisplay(slotId) {
   }
 
   if (tagBox) {
-    tagBox.innerHTML = item.isCloset
-      ? '<span class="sil-badge owned">★ OWNED</span>'
-      : (item.onSale ? '<span class="sil-badge sale">SALE</span>' : '<span class="sil-badge store">STORE</span>');
+    if (item.isCloset) {
+      tagBox.innerHTML = '<span class="sil-badge owned">★ OWNED</span>';
+    } else {
+      const isSale = !!item.onSale;
+      const tagText = isSale ? 'SALE ↗' : 'STORE ↗';
+      const tagClass = isSale ? 'sil-badge sale' : 'sil-badge store';
+      if (item.url) {
+        tagBox.innerHTML = `<button type="button" class="${tagClass} clickable-badge" data-buy-url="${esc(item.url)}" title="Open store in browser: ${esc(item.brand || 'Store')}">${tagText}</button>`;
+      } else {
+        tagBox.innerHTML = `<span class="${tagClass}">${isSale ? 'SALE' : 'STORE'}</span>`;
+      }
+    }
   }
 
   const priceStr = item.price != null ? money(item.price, item.currency) : '';
 
   if (metaBox) {
+    const hasStoreUrl = !item.isCloset && !!item.url;
     metaBox.innerHTML = `
       <div class="m-meta-brand">${esc(item.brand)}</div>
       <div class="m-meta-title" title="${esc(item.title)}">${esc(item.title)}</div>
-      <div class="m-meta-price">${esc(priceStr)}</div>
+      <div class="m-meta-row">
+        <span class="m-meta-price">${esc(priceStr)}</span>
+        ${hasStoreUrl ? `<button type="button" class="m-meta-store-btn" data-buy-url="${esc(item.url)}" title="Open store in browser: ${esc(item.brand || 'Store')}">OPEN STORE ↗</button>` : ''}
+      </div>
     `;
   }
 }
@@ -564,12 +595,14 @@ function updateFitSummary() {
 
   const rowsHtml = pieces.map(({ id, item }) => {
     const slotDef = MANNEQUIN_SLOTS.find((s) => s.id === id);
+    const hasUrl = !item.isCloset && !!item.url;
     return `
-      <div class="summary-piece-row">
+      <div class="summary-piece-row ${hasUrl ? 'clickable' : ''}" ${hasUrl ? `data-buy-url="${esc(item.url)}" title="Click to open store in browser: ${esc(item.brand || 'Store')}"` : ''}>
         <span class="p-icon">${slotDef.icon}</span>
         <span class="p-title">${esc(item.title)}</span>
         <span class="p-badge ${item.isCloset ? 'owned' : 'cop'}">${item.isCloset ? 'OWNED' : 'COP'}</span>
         <span class="p-price">${item.price != null ? money(item.price, item.currency) : ''}</span>
+        ${hasUrl ? `<button type="button" class="p-row-open-btn" data-buy-url="${esc(item.url)}" title="Open in browser">↗</button>` : ''}
       </div>
     `;
   }).join('');
@@ -1061,11 +1094,32 @@ function showBuyPiecesModal() {
 }
 
 // ---------------------------------------------------------------- Event Binding
+let mannequinEventsBound = false;
 function bindMannequinEvents() {
+  if (mannequinEventsBound) return;
+  mannequinEventsBound = true;
+
+  // Global document listener for store/buy links across the entire window (including #modal)
+  document.addEventListener('click', (e) => {
+    const buyLinkBtn = e.target.closest('[data-buy-url]');
+    if (buyLinkBtn) {
+      e.stopPropagation();
+      openExternalUrl(buyLinkBtn.dataset.buyUrl);
+    }
+  });
+
   const container = $('#main');
   if (!container) return;
 
   container.addEventListener('click', (e) => {
+    // 0. Direct Store / Product Link (highest priority on clicks)
+    const buyLinkBtn = e.target.closest('[data-buy-url]');
+    if (buyLinkBtn) {
+      e.stopPropagation();
+      openExternalUrl(buyLinkBtn.dataset.buyUrl);
+      return;
+    }
+
     // 1. Roll Full Drip
     if (e.target.closest('#roll-full-btn')) {
       spinFullFit();
@@ -1171,13 +1225,6 @@ function bindMannequinEvents() {
     // 9. Buy Store Pieces Modal
     if (e.target.closest('#buy-fit-btn')) {
       showBuyPiecesModal();
-      return;
-    }
-
-    // 10. Open Buy Link from Modal
-    const buyLinkBtn = e.target.closest('[data-buy-url]');
-    if (buyLinkBtn) {
-      window.api.open(buyLinkBtn.dataset.buyUrl);
       return;
     }
 

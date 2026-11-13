@@ -1280,7 +1280,7 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   position: absolute;
   top: 6px;
   left: 6px;
-  pointer-events: none;
+  z-index: 4;
 }
 
 .sil-badge {
@@ -1288,6 +1288,20 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   font-size: 7px;
   padding: 2px 5px;
   box-shadow: 1px 1px 0 #000;
+  border: none;
+  display: inline-block;
+  line-height: 1;
+}
+
+button.sil-badge.clickable-badge {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+button.sil-badge.clickable-badge:hover {
+  filter: brightness(1.25);
+  transform: scale(1.05);
 }
 
 .sil-badge.owned { background: var(--green); color: #000; font-weight: bold; }
@@ -1392,6 +1406,33 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   margin-top: 1px;
 }
 
+.m-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.m-meta-store-btn {
+  font-family: var(--pixel);
+  font-size: 7px;
+  background: #000;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  padding: 1px 6px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.1s ease;
+  line-height: 1.2;
+}
+
+.m-meta-store-btn:hover {
+  background: var(--cyan);
+  color: #000;
+  box-shadow: 0 0 6px var(--cyan);
+}
+
 /* Right Column Summary */
 .studio-summary-aside {
   position: sticky;
@@ -1467,6 +1508,35 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   background: #080214;
   border: 1px solid #2d1d58;
   padding: 4px 6px;
+}
+
+.summary-piece-row.clickable {
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.summary-piece-row.clickable:hover {
+  background: #140728;
+  border-color: var(--cyan);
+}
+
+.p-row-open-btn {
+  font-family: var(--pixel);
+  font-size: 8px;
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid #443272;
+  padding: 1px 4px;
+  cursor: pointer;
+  line-height: 1;
+  flex: none;
+  transition: all 0.1s ease;
+}
+
+.p-row-open-btn:hover {
+  background: var(--cyan);
+  color: #000;
+  border-color: var(--cyan);
 }
 
 .p-icon {
