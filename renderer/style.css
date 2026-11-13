@@ -1051,8 +1051,6 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   justify-content: center;
   background: radial-gradient(ellipse at 50% 50%, rgba(44, 246, 255, 0.05) 0%, transparent 70%);
   padding: 6px 0 20px;
-  max-height: calc(100vh - 150px);
-  overflow-y: auto;
 }
 
 .mannequin-silhouette-body {
@@ -1460,9 +1458,6 @@ body.mobile #crt::before { background: repeating-linear-gradient(0deg, rgba(0, 0
   flex-direction: column;
   gap: 6px;
   margin-bottom: 14px;
-  max-height: 40vh;
-  overflow-y: auto;
-  padding-right: 2px;
 }
 
 .summary-piece-row {
